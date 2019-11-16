@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta http-equiv="X-UA-Compatible" content="ie=edge">
+ <title>Document</title>
+ 
+<link rel="stylesheet" type="text/css" href="main.css">
+
+<script src="./node_modules/web3/dist/web3.min.js">
+</script>
+
+
+</head>
+<body>
+<div class="container">
+<h1>First Smart Contract</h1>
+<h2 id="instructor"></h2>
+<label for="idAdminAdd" class="col-lg-2 control-label">Address</label>
+ <input id="idAdminAdd" type="text">
+<label for="idVillage" class="col-lg-2 control-label">village</label>
+ <input id="idVillage" type="text">
+<button id="button">ADD Admin</button> 
+
+<label>state</label>
+ <input id="idState" type="text" value="MH">
+ <label>District</label>
+ <input id="idDistrict" type="text" value="sol">
+ <label>village</label>
+ <input id="idVillage1" type="text" value="sol">
+ <label>surveyNumber</label>
+ <input id="idSurveyNo" type="text" value="1000">
+ <label>OwnerAdd</label>
+ <input id="idOwnerAdd" type="text" value="0x927d2b0270821b3f26cb34f292fe25f963f1a053">
+ <label>Market Value</label>
+ <input id="idMValue" type="number" value="10">
+ 
+<button id="button2">Registration</button>
+<button id="button3">ViewLandDetails</button>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script>
+
+ if (typeof(web3) !== "undefined") {
+   web3 = new Web3(web3.currentProvider);
+ }else{
+ // set the provider you want from Web3.providers
+   web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+//web3 = new Web3(new Web3.providers.HttpProvider('https://infura.io/project/1f73e155999a4662a4691ccf66797938'));
+ }
+ web3.eth.defaultAccount = web3.eth.accounts[0];
+ var abi=[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_Admin",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_village",
+				"type": "string"
+			}
+		],
+		"name": "addAdmin",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			}
+		],
+		"name": "buyProperty",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_priceByOwner",
+				"type": "uint256"
+			}
+		],
+		"name": "makeAvailable",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "enum landReg.enumReqStatusByAdmin",
+				"name": "adminstatus",
+				"type": "uint8"
+			}
+		],
+		"name": "processRequestApprovedByAdmin",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "enum landReg.enumReqStatus",
+				"name": "status",
+				"type": "uint8"
+			}
+		],
+		"name": "processRequestApprovedByOwner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_state",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_district",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_village",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "_OwnerAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_marketValue",
+				"type": "uint256"
+			}
+		],
+		"name": "Registration",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			}
+		],
+		"name": "requstToLandOwner",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_village",
+				"type": "string"
+			}
+		],
+		"name": "getAdmin",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			}
+		],
+		"name": "previousHistory",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "state",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "district",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "village",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "surveyNumber",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "CurrentOwner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "marketValue",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isAvailable",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "priceByOwner",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "priceByRequester",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum landReg.enumReqStatus",
+						"name": "requestStatus",
+						"type": "uint8"
+					},
+					{
+						"internalType": "enum landReg.enumReqStatusByAdmin",
+						"name": "requestStatusByAdmin",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct landReg.landDetails[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			}
+		],
+		"name": "viewLandDetails",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_surveyNumber",
+				"type": "string"
+			}
+		],
+		"name": "viewRequest",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "enum landReg.enumReqStatus",
+				"name": "",
+				"type": "uint8"
+			},
+			{
+				"internalType": "enum landReg.enumReqStatusByAdmin",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+ var contractAddr='0x26b4AFb60d6C903165150C6F0AA14F8016bE4aec';
+ var CoursesContract = web3.eth.contract(abi);	
+ var Courses = CoursesContract.at(contractAddr); 
+
+ 
+ $("#instructor").html(web3.eth.defaultAccount);
+ console.log(Courses);
+  
+$("#button").click(function() {
+ console.log("Adding admin");
+ Courses.addAdmin($("#idAdminAdd").val().toString(), $("#idVillage").val());
+ Courses.getAdmin($("#idVillage").val(), function(error,result){
+$("#instructor").html(
+'AdminAddress'+result)
+console.log("error",error);
+  console.log("result",result);	
+ 
+ });
+	});
+
+$("#button2").click({gas:300000},function() {
+ console.log("Registratring");
+	Courses.Registration(
+	 $("#idState").val(),
+	 $("#idDistrict").val(),
+	 $("#idVillage1").val(),
+	 $("#idSurveyNo").val(),
+	 $("#idOwnerAdd").val(),
+	 $("#idMValue").val()
+	 );
+});
+/*
+$("#button3").click(function(){
+console.log("fetching Details"); 
+ Courses.viewLandDetails($("#idSurveyNo").val(),function(error, result){
+  console.log("error",error);
+  console.log("result",result);
+ /* 
+  if(!error){
+    $("#instructor").html(
+	'OwnerAddress'+result[0]+
+	'State'+result[1]+
+	'District'+result[2]+
+	'village'+result[3]+
+	'IsAvailable'+result[4]+
+	'PriceByOwner'+result[5]
+	);
+    console.log(result);
+    }
+ else
+   console.error(error);
+  *
+ });
+});
+ */
+</script>
+</body>
+</html>
